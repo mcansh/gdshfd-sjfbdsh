@@ -1,0 +1,1269 @@
+diff --git a/node_modules/@remix-run/server-runtime/data.js b/node_modules/@remix-run/server-runtime/data.js
+index 327d5a5..7d44960 100644
+--- a/node_modules/@remix-run/server-runtime/data.js
++++ b/node_modules/@remix-run/server-runtime/data.js
+@@ -8,27 +8,23 @@
+  *
+  * @license MIT
+  */
+-'use strict';
++"use strict";
+ 
+-Object.defineProperty(exports, '__esModule', { value: true });
++Object.defineProperty(exports, "__esModule", { value: true });
+ 
+-var responses = require('./responses.js');
++var responses = require("./responses.js");
+ 
+ /**
+  * An object of arbitrary for route loaders and actions provided by the
+  * server's `getLoadContext()` function.
+  */
+ 
+-async function callRouteAction({
+-  loadContext,
+-  match,
+-  request
+-}) {
++async function callRouteAction({ loadContext, match, request }) {
+   let action = match.route.module.action;
+ 
+   if (!action) {
+     let response = new Response(null, {
+-      status: 405
++      status: 405,
+     });
+     response.headers.set("X-Remix-Catch", "yes");
+     return response;
+@@ -40,7 +36,7 @@ async function callRouteAction({
+     result = await action({
+       request: stripDataParam(stripIndexParam(request)),
+       context: loadContext,
+-      params: match.params
++      params: match.params,
+     });
+   } catch (error) {
+     if (!responses.isResponse(error)) {
+@@ -55,29 +51,32 @@ async function callRouteAction({
+   }
+ 
+   if (result === undefined) {
+-    throw new Error(`You defined an action for route "${match.route.id}" but didn't return ` + `anything from your \`action\` function. Please return a value or \`null\`.`);
++    throw new Error(
++      `You defined an action for route "${match.route.id}" but didn't return ` +
++        `anything from your \`action\` function. Please return a value or \`null\`.`
++    );
+   }
+ 
+   return responses.isResponse(result) ? result : responses.json(result);
+ }
+-async function callRouteLoader({
+-  loadContext,
+-  match,
+-  request
+-}) {
++async function callRouteLoader({ loadContext, match, request }) {
+   let loader = match.route.module.loader;
+ 
+   if (!loader) {
+-    throw new Error(`You made a ${request.method} request to ${request.url} but did not provide ` + `a \`loader\` for route "${match.route.id}", so there is no way to handle the ` + `request.`);
++    throw new Error(
++      `You made a ${request.method} request to ${request.url} but did not provide ` +
++        `a \`loader\` for route "${match.route.id}", so there is no way to handle the ` +
++        `request.`
++    );
+   }
+ 
+   let result;
+ 
+   try {
+     result = await loader({
+-      request: stripDataParam(stripIndexParam(request.clone())),
++      request: stripDataParam(stripIndexParam(request)),
+       context: loadContext,
+-      params: match.params
++      params: match.params,
+     });
+   } catch (error) {
+     if (!responses.isResponse(error)) {
+@@ -92,7 +91,10 @@ async function callRouteLoader({
+   }
+ 
+   if (result === undefined) {
+-    throw new Error(`You defined a loader for route "${match.route.id}" but didn't return ` + `anything from your \`loader\` function. Please return a value or \`null\`.`);
++    throw new Error(
++      `You defined a loader for route "${match.route.id}" but didn't return ` +
++        `anything from your \`loader\` function. Please return a value or \`null\`.`
++    );
+   }
+ 
+   return responses.isResponse(result) ? result : responses.json(result);
+@@ -134,7 +136,6 @@ function extractData(response) {
+   // - multipart/form-data ?
+   // - binary (audio/video) ?
+ 
+-
+   return response.text();
+ }
+ 
+diff --git a/node_modules/@remix-run/server-runtime/esm/data.js b/node_modules/@remix-run/server-runtime/esm/data.js
+index ac0c007..293c4c7 100644
+--- a/node_modules/@remix-run/server-runtime/esm/data.js
++++ b/node_modules/@remix-run/server-runtime/esm/data.js
+@@ -8,23 +8,19 @@
+  *
+  * @license MIT
+  */
+-import { isResponse, isRedirectResponse, json } from './responses.js';
++import { isResponse, isRedirectResponse, json } from "./responses.js";
+ 
+ /**
+  * An object of arbitrary for route loaders and actions provided by the
+  * server's `getLoadContext()` function.
+  */
+ 
+-async function callRouteAction({
+-  loadContext,
+-  match,
+-  request
+-}) {
++async function callRouteAction({ loadContext, match, request }) {
+   let action = match.route.module.action;
+ 
+   if (!action) {
+     let response = new Response(null, {
+-      status: 405
++      status: 405,
+     });
+     response.headers.set("X-Remix-Catch", "yes");
+     return response;
+@@ -36,7 +32,7 @@ async function callRouteAction({
+     result = await action({
+       request: stripDataParam(stripIndexParam(request)),
+       context: loadContext,
+-      params: match.params
++      params: match.params,
+     });
+   } catch (error) {
+     if (!isResponse(error)) {
+@@ -51,29 +47,32 @@ async function callRouteAction({
+   }
+ 
+   if (result === undefined) {
+-    throw new Error(`You defined an action for route "${match.route.id}" but didn't return ` + `anything from your \`action\` function. Please return a value or \`null\`.`);
++    throw new Error(
++      `You defined an action for route "${match.route.id}" but didn't return ` +
++        `anything from your \`action\` function. Please return a value or \`null\`.`
++    );
+   }
+ 
+   return isResponse(result) ? result : json(result);
+ }
+-async function callRouteLoader({
+-  loadContext,
+-  match,
+-  request
+-}) {
++async function callRouteLoader({ loadContext, match, request }) {
+   let loader = match.route.module.loader;
+ 
+   if (!loader) {
+-    throw new Error(`You made a ${request.method} request to ${request.url} but did not provide ` + `a \`loader\` for route "${match.route.id}", so there is no way to handle the ` + `request.`);
++    throw new Error(
++      `You made a ${request.method} request to ${request.url} but did not provide ` +
++        `a \`loader\` for route "${match.route.id}", so there is no way to handle the ` +
++        `request.`
++    );
+   }
+ 
+   let result;
+ 
+   try {
+     result = await loader({
+-      request: stripDataParam(stripIndexParam(request.clone())),
++      request: stripDataParam(stripIndexParam(request)),
+       context: loadContext,
+-      params: match.params
++      params: match.params,
+     });
+   } catch (error) {
+     if (!isResponse(error)) {
+@@ -88,7 +87,10 @@ async function callRouteLoader({
+   }
+ 
+   if (result === undefined) {
+-    throw new Error(`You defined a loader for route "${match.route.id}" but didn't return ` + `anything from your \`loader\` function. Please return a value or \`null\`.`);
++    throw new Error(
++      `You defined a loader for route "${match.route.id}" but didn't return ` +
++        `anything from your \`loader\` function. Please return a value or \`null\`.`
++    );
+   }
+ 
+   return isResponse(result) ? result : json(result);
+@@ -130,7 +132,6 @@ function extractData(response) {
+   // - multipart/form-data ?
+   // - binary (audio/video) ?
+ 
+-
+   return response.text();
+ }
+ 
+diff --git a/node_modules/@remix-run/server-runtime/esm/server.js b/node_modules/@remix-run/server-runtime/esm/server.js
+index db701da..6201484 100644
+--- a/node_modules/@remix-run/server-runtime/esm/server.js
++++ b/node_modules/@remix-run/server-runtime/esm/server.js
+@@ -8,15 +8,15 @@
+  *
+  * @license MIT
+  */
+-import { callRouteAction, callRouteLoader, extractData } from './data.js';
+-import { createEntryRouteModules, createEntryMatches } from './entry.js';
+-import { serializeError } from './errors.js';
+-import { getDocumentHeaders } from './headers.js';
+-import { isServerMode, ServerMode } from './mode.js';
+-import { matchServerRoutes } from './routeMatching.js';
+-import { createRoutes } from './routes.js';
+-import { isRedirectResponse, isCatchResponse, json } from './responses.js';
+-import { createServerHandoffString } from './serverHandoff.js';
++import { callRouteAction, callRouteLoader, extractData } from "./data.js";
++import { createEntryRouteModules, createEntryMatches } from "./entry.js";
++import { serializeError } from "./errors.js";
++import { getDocumentHeaders } from "./headers.js";
++import { isServerMode, ServerMode } from "./mode.js";
++import { matchServerRoutes } from "./routeMatching.js";
++import { createRoutes } from "./routes.js";
++import { isRedirectResponse, isCatchResponse, json } from "./responses.js";
++import { createServerHandoffString } from "./serverHandoff.js";
+ 
+ const createRequestHandler = (build, mode) => {
+   let routes = createRoutes(build.routes);
+@@ -32,14 +32,14 @@ const createRequestHandler = (build, mode) => {
+         loadContext,
+         matches: matches,
+         handleDataRequest: build.entry.module.handleDataRequest,
+-        serverMode
++        serverMode,
+       });
+     } else if (matches && !matches[matches.length - 1].route.module.default) {
+       response = await handleResourceRequest({
+         request,
+         loadContext,
+         matches,
+-        serverMode
++        serverMode,
+       });
+     } else {
+       response = await handleDocumentRequest({
+@@ -48,7 +48,7 @@ const createRequestHandler = (build, mode) => {
+         matches,
+         request,
+         routes,
+-        serverMode
++        serverMode,
+       });
+     }
+ 
+@@ -56,7 +56,7 @@ const createRequestHandler = (build, mode) => {
+       return new Response(null, {
+         headers: response.headers,
+         status: response.status,
+-        statusText: response.statusText
++        statusText: response.statusText,
+       });
+     }
+ 
+@@ -69,16 +69,22 @@ async function handleDataRequest({
+   loadContext,
+   matches,
+   request,
+-  serverMode
++  serverMode,
+ }) {
+   if (!isValidRequestMethod(request)) {
+-    return errorBoundaryError(new Error(`Invalid request method "${request.method}"`), 405);
++    return errorBoundaryError(
++      new Error(`Invalid request method "${request.method}"`),
++      405
++    );
+   }
+ 
+   let url = new URL(request.url);
+ 
+   if (!matches) {
+-    return errorBoundaryError(new Error(`No route matches URL "${url.pathname}"`), 404);
++    return errorBoundaryError(
++      new Error(`No route matches URL "${url.pathname}"`),
++      404
++    );
+   }
+ 
+   let response;
+@@ -90,7 +96,7 @@ async function handleDataRequest({
+       response = await callRouteAction({
+         loadContext,
+         match,
+-        request: request
++        request: request,
+       });
+     } else {
+       let routeId = url.searchParams.get("_data");
+@@ -99,17 +105,20 @@ async function handleDataRequest({
+         return errorBoundaryError(new Error(`Missing route id in ?_data`), 403);
+       }
+ 
+-      let tempMatch = matches.find(match => match.route.id === routeId);
++      let tempMatch = matches.find((match) => match.route.id === routeId);
+ 
+       if (!tempMatch) {
+-        return errorBoundaryError(new Error(`Route "${routeId}" does not match URL "${url.pathname}"`), 403);
++        return errorBoundaryError(
++          new Error(`Route "${routeId}" does not match URL "${url.pathname}"`),
++          403
++        );
+       }
+ 
+       match = tempMatch;
+       response = await callRouteLoader({
+         loadContext,
+         match,
+-        request
++        request,
+       });
+     }
+ 
+@@ -127,15 +136,15 @@ async function handleDataRequest({
+ 
+       return new Response(null, {
+         status: 204,
+-        headers
++        headers,
+       });
+     }
+ 
+     if (handleDataRequest) {
+-      response = await handleDataRequest(response.clone(), {
++      response = await handleDataRequest(response, {
+         context: loadContext,
+         params: match.params,
+-        request: request.clone()
++        request,
+       });
+     }
+ 
+@@ -159,7 +168,7 @@ async function handleDocumentRequest({
+   matches,
+   request,
+   routes,
+-  serverMode
++  serverMode,
+ }) {
+   let url = new URL(request.url);
+   let appState = {
+@@ -169,7 +178,7 @@ async function handleDocumentRequest({
+     renderBoundaryRouteId: null,
+     loaderBoundaryRouteId: null,
+     error: undefined,
+-    catch: undefined
++    catch: undefined,
+   };
+ 
+   if (!isValidRequestMethod(request)) {
+@@ -178,14 +187,14 @@ async function handleDocumentRequest({
+     appState.catch = {
+       data: null,
+       status: 405,
+-      statusText: "Method Not Allowed"
++      statusText: "Method Not Allowed",
+     };
+   } else if (!matches) {
+     appState.trackCatchBoundaries = false;
+     appState.catch = {
+       data: null,
+       status: 404,
+-      statusText: "Not Found"
++      statusText: "Not Found",
+     };
+   }
+ 
+@@ -201,7 +210,7 @@ async function handleDocumentRequest({
+       actionResponse = await callRouteAction({
+         loadContext,
+         match: actionMatch,
+-        request: request
++        request: request,
+       });
+ 
+       if (isRedirectResponse(actionResponse)) {
+@@ -210,27 +219,36 @@ async function handleDocumentRequest({
+ 
+       actionStatus = {
+         status: actionResponse.status,
+-        statusText: actionResponse.statusText
++        statusText: actionResponse.statusText,
+       };
+ 
+       if (isCatchResponse(actionResponse)) {
+-        appState.catchBoundaryRouteId = getDeepestRouteIdWithBoundary(matches, "CatchBoundary");
++        appState.catchBoundaryRouteId = getDeepestRouteIdWithBoundary(
++          matches,
++          "CatchBoundary"
++        );
+         appState.trackCatchBoundaries = false;
+-        appState.catch = { ...actionStatus,
+-          data: await extractData(actionResponse)
++        appState.catch = {
++          ...actionStatus,
++          data: await extractData(actionResponse),
+         };
+       } else {
+         actionData = {
+-          [actionMatch.route.id]: await extractData(actionResponse)
++          [actionMatch.route.id]: await extractData(actionResponse),
+         };
+       }
+     } catch (error) {
+-      appState.loaderBoundaryRouteId = getDeepestRouteIdWithBoundary(matches, "ErrorBoundary");
++      appState.loaderBoundaryRouteId = getDeepestRouteIdWithBoundary(
++        matches,
++        "ErrorBoundary"
++      );
+       appState.trackBoundaries = false;
+       appState.error = await serializeError(error);
+ 
+       if (serverMode !== ServerMode.Test) {
+-        console.error(`There was an error running the action for route ${actionMatch.route.id}`);
++        console.error(
++          `There was an error running the action for route ${actionMatch.route.id}`
++        );
+       }
+     }
+   }
+@@ -239,24 +257,36 @@ async function handleDocumentRequest({
+   let matchesToLoad = matches || [];
+ 
+   if (appState.catch) {
+-    matchesToLoad = getMatchesUpToDeepestBoundary( // get rid of the action, we don't want to call it's loader either
+-    // because we'll be rendering the catch boundary, if you can get access
+-    // to the loader data in the catch boundary then how the heck is it
+-    // supposed to deal with thrown responses?
+-    matchesToLoad.slice(0, -1), "CatchBoundary");
++    matchesToLoad = getMatchesUpToDeepestBoundary(
++      // get rid of the action, we don't want to call it's loader either
++      // because we'll be rendering the catch boundary, if you can get access
++      // to the loader data in the catch boundary then how the heck is it
++      // supposed to deal with thrown responses?
++      matchesToLoad.slice(0, -1),
++      "CatchBoundary"
++    );
+   } else if (appState.error) {
+-    matchesToLoad = getMatchesUpToDeepestBoundary( // get rid of the action, we don't want to call it's loader either
+-    // because we'll be rendering the error boundary, if you can get access
+-    // to the loader data in the error boundary then how the heck is it
+-    // supposed to deal with errors in the loader, too?
+-    matchesToLoad.slice(0, -1), "ErrorBoundary");
++    matchesToLoad = getMatchesUpToDeepestBoundary(
++      // get rid of the action, we don't want to call it's loader either
++      // because we'll be rendering the error boundary, if you can get access
++      // to the loader data in the error boundary then how the heck is it
++      // supposed to deal with errors in the loader, too?
++      matchesToLoad.slice(0, -1),
++      "ErrorBoundary"
++    );
+   }
+ 
+-  let routeLoaderResults = await Promise.allSettled(matchesToLoad.map(match => match.route.module.loader ? callRouteLoader({
+-    loadContext,
+-    match,
+-    request
+-  }) : Promise.resolve(undefined))); // Store the state of the action. We will use this to determine later
++  let routeLoaderResults = await Promise.allSettled(
++    matchesToLoad.map((match) =>
++      match.route.module.loader
++        ? callRouteLoader({
++            loadContext,
++            match,
++            request,
++          })
++        : Promise.resolve(undefined)
++    )
++  ); // Store the state of the action. We will use this to determine later
+   // what catch or error boundary should be rendered under cases where
+   // actions don't throw but loaders do, actions throw and parent loaders
+   // also throw, etc.
+@@ -290,12 +320,10 @@ async function handleDocumentRequest({
+     // after an action catches or errors we won't follow it, and instead
+     // render the boundary caused by the action.
+ 
+-
+     if (!actionCatch && !actionError && response && isRedirect) {
+       return response;
+     } // Track the boundary ID's for the loaders
+ 
+-
+     if (match.route.module.CatchBoundary) {
+       appState.catchBoundaryRouteId = match.route.id;
+     }
+@@ -310,7 +338,9 @@ async function handleDocumentRequest({
+       appState.error = await serializeError(error);
+ 
+       if (serverMode !== ServerMode.Test) {
+-        console.error(`There was an error running the data loader for route ${match.route.id}`);
++        console.error(
++          `There was an error running the data loader for route ${match.route.id}`
++        );
+       }
+ 
+       break;
+@@ -324,7 +354,7 @@ async function handleDocumentRequest({
+         appState.catch = {
+           data: await extractData(response),
+           status: response.status,
+-          statusText: response.statusText
++          statusText: response.statusText,
+         };
+         break;
+       } else {
+@@ -337,7 +367,6 @@ async function handleDocumentRequest({
+   // initially triggered a boundary as that match would not exist in the
+   // matches to load.
+ 
+-
+   if (!appState.catch) {
+     appState.catchBoundaryRouteId = actionCatchBoundaryRouteId;
+   }
+@@ -347,7 +376,6 @@ async function handleDocumentRequest({
+   } // If there was an action error or catch, we will reset the state to the
+   // initial values, otherwise we will use whatever came out of the loaders.
+ 
+-
+   appState.catch = actionCatch || appState.catch;
+   appState.error = actionError || appState.error;
+   let renderableMatches = getRenderableMatches(matches, appState);
+@@ -361,32 +389,51 @@ async function handleDocumentRequest({
+       renderableMatches.push({
+         params: {},
+         pathname: "",
+-        route: routes[0]
++        route: routes[0],
+       });
+     }
+   } // Handle responses with a non-200 status code. The first loader with a
+   // non-200 status code determines the status code for the whole response.
+ 
+-
+-  let notOkResponse = actionStatus && actionStatus.status !== 200 ? actionStatus.status : loaderStatusCodes.find(status => status !== 200);
+-  let responseStatusCode = appState.error ? 500 : typeof notOkResponse === "number" ? notOkResponse : appState.catch ? appState.catch.status : 200;
+-  let responseHeaders = getDocumentHeaders(build, renderableMatches, routeLoaderResponses, actionResponse);
++  let notOkResponse =
++    actionStatus && actionStatus.status !== 200
++      ? actionStatus.status
++      : loaderStatusCodes.find((status) => status !== 200);
++  let responseStatusCode = appState.error
++    ? 500
++    : typeof notOkResponse === "number"
++    ? notOkResponse
++    : appState.catch
++    ? appState.catch.status
++    : 200;
++  let responseHeaders = getDocumentHeaders(
++    build,
++    renderableMatches,
++    routeLoaderResponses,
++    actionResponse
++  );
+   let entryMatches = createEntryMatches(renderableMatches, build.assets.routes);
+   let serverHandoff = {
+     actionData,
+     appState: appState,
+     matches: entryMatches,
+-    routeData
++    routeData,
+   };
+-  let entryContext = { ...serverHandoff,
++  let entryContext = {
++    ...serverHandoff,
+     manifest: build.assets,
+     routeModules,
+-    serverHandoffString: createServerHandoffString(serverHandoff)
++    serverHandoffString: createServerHandoffString(serverHandoff),
+   };
+   let handleDocumentRequest = build.entry.module.default;
+ 
+   try {
+-    return await handleDocumentRequest(request.clone(), responseStatusCode, responseHeaders, entryContext);
++    return await handleDocumentRequest(
++      request,
++      responseStatusCode,
++      responseHeaders,
++      entryContext
++    );
+   } catch (error) {
+     responseStatusCode = 500; // Go again, this time with the componentDidCatch emulation. As it rendered
+     // last time we mutated `componentDidCatch.routeId` for the last rendered
+@@ -400,7 +447,12 @@ async function handleDocumentRequest({
+     entryContext.serverHandoffString = createServerHandoffString(serverHandoff);
+ 
+     try {
+-      return await handleDocumentRequest(request.clone(), responseStatusCode, responseHeaders, entryContext);
++      return await handleDocumentRequest(
++        request,
++        responseStatusCode,
++        responseHeaders,
++        entryContext
++      );
+     } catch (error) {
+       if (serverMode !== ServerMode.Test) {
+         console.error(error);
+@@ -412,12 +464,11 @@ async function handleDocumentRequest({
+         message += `\n\n${String(error)}`;
+       } // Good grief folks, get your act together 😂!
+ 
+-
+       return new Response(message, {
+         status: 500,
+         headers: {
+-          "Content-Type": "text/plain"
+-        }
++          "Content-Type": "text/plain",
++        },
+       });
+     }
+   }
+@@ -427,7 +478,7 @@ async function handleResourceRequest({
+   loadContext,
+   matches,
+   request,
+-  serverMode
++  serverMode,
+ }) {
+   let match = matches.slice(-1)[0];
+ 
+@@ -436,13 +487,13 @@ async function handleResourceRequest({
+       return await callRouteAction({
+         match,
+         loadContext,
+-        request
++        request,
+       });
+     } else {
+       return await callRouteLoader({
+         match,
+         loadContext,
+-        request
++        request,
+       });
+     }
+   } catch (error) {
+@@ -456,29 +507,24 @@ async function handleResourceRequest({
+       message += `\n\n${String(error)}`;
+     } // Good grief folks, get your act together 😂!
+ 
+-
+     return new Response(message, {
+       status: 500,
+       headers: {
+-        "Content-Type": "text/plain"
+-      }
++        "Content-Type": "text/plain",
++      },
+     });
+   }
+ }
+ 
+ const validActionMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+ 
+-function isActionRequest({
+-  method
+-}) {
++function isActionRequest({ method }) {
+   return validActionMethods.has(method.toUpperCase());
+ }
+ 
+ const validRequestMethods = new Set(["GET", "HEAD", ...validActionMethods]);
+ 
+-function isValidRequestMethod({
+-  method
+-}) {
++function isValidRequestMethod({ method }) {
+   return validRequestMethods.has(method.toUpperCase());
+ }
+ 
+@@ -486,8 +532,8 @@ async function errorBoundaryError(error, status) {
+   return json(await serializeError(error), {
+     status,
+     headers: {
+-      "X-Remix-Error": "yes"
+-    }
++      "X-Remix-Error": "yes",
++    },
+   });
+ }
+ 
+@@ -538,13 +584,11 @@ function getMatchesUpToDeepestBoundary(matches, key) {
+ } // This prevents `<Outlet/>` from rendering anything below where the error threw
+ // TODO: maybe do this in <RemixErrorBoundary + context>
+ 
+-
+ function getRenderableMatches(matches, appState) {
+   if (!matches) {
+     return null;
+   } // no error, no worries
+ 
+-
+   if (!appState.catch && !appState.error) {
+     return matches;
+   }
+@@ -553,7 +597,11 @@ function getRenderableMatches(matches, appState) {
+   matches.forEach((match, index) => {
+     let id = match.route.id;
+ 
+-    if (appState.renderBoundaryRouteId === id || appState.loaderBoundaryRouteId === id || appState.catchBoundaryRouteId === id) {
++    if (
++      appState.renderBoundaryRouteId === id ||
++      appState.loaderBoundaryRouteId === id ||
++      appState.catchBoundaryRouteId === id
++    ) {
+       lastRenderableIndex = index;
+     }
+   });
+diff --git a/node_modules/@remix-run/server-runtime/server.js b/node_modules/@remix-run/server-runtime/server.js
+index 07d958b..a896aab 100644
+--- a/node_modules/@remix-run/server-runtime/server.js
++++ b/node_modules/@remix-run/server-runtime/server.js
+@@ -8,23 +8,25 @@
+  *
+  * @license MIT
+  */
+-'use strict';
++"use strict";
+ 
+-Object.defineProperty(exports, '__esModule', { value: true });
++Object.defineProperty(exports, "__esModule", { value: true });
+ 
+-var data = require('./data.js');
+-var entry = require('./entry.js');
+-var errors = require('./errors.js');
+-var headers = require('./headers.js');
+-var mode = require('./mode.js');
+-var routeMatching = require('./routeMatching.js');
+-var routes = require('./routes.js');
+-var responses = require('./responses.js');
+-var serverHandoff = require('./serverHandoff.js');
++var data = require("./data.js");
++var entry = require("./entry.js");
++var errors = require("./errors.js");
++var headers = require("./headers.js");
++var mode = require("./mode.js");
++var routeMatching = require("./routeMatching.js");
++var routes = require("./routes.js");
++var responses = require("./responses.js");
++var serverHandoff = require("./serverHandoff.js");
+ 
+ const createRequestHandler = (build, mode$1) => {
+   let routes$1 = routes.createRoutes(build.routes);
+-  let serverMode = mode.isServerMode(mode$1) ? mode$1 : mode.ServerMode.Production;
++  let serverMode = mode.isServerMode(mode$1)
++    ? mode$1
++    : mode.ServerMode.Production;
+   return async function requestHandler(request, loadContext) {
+     let url = new URL(request.url);
+     let matches = routeMatching.matchServerRoutes(routes$1, url.pathname);
+@@ -36,14 +38,14 @@ const createRequestHandler = (build, mode$1) => {
+         loadContext,
+         matches: matches,
+         handleDataRequest: build.entry.module.handleDataRequest,
+-        serverMode
++        serverMode,
+       });
+     } else if (matches && !matches[matches.length - 1].route.module.default) {
+       response = await handleResourceRequest({
+         request,
+         loadContext,
+         matches,
+-        serverMode
++        serverMode,
+       });
+     } else {
+       response = await handleDocumentRequest({
+@@ -52,7 +54,7 @@ const createRequestHandler = (build, mode$1) => {
+         matches,
+         request,
+         routes: routes$1,
+-        serverMode
++        serverMode,
+       });
+     }
+ 
+@@ -60,7 +62,7 @@ const createRequestHandler = (build, mode$1) => {
+       return new Response(null, {
+         headers: response.headers,
+         status: response.status,
+-        statusText: response.statusText
++        statusText: response.statusText,
+       });
+     }
+ 
+@@ -73,16 +75,22 @@ async function handleDataRequest({
+   loadContext,
+   matches,
+   request,
+-  serverMode
++  serverMode,
+ }) {
+   if (!isValidRequestMethod(request)) {
+-    return errorBoundaryError(new Error(`Invalid request method "${request.method}"`), 405);
++    return errorBoundaryError(
++      new Error(`Invalid request method "${request.method}"`),
++      405
++    );
+   }
+ 
+   let url = new URL(request.url);
+ 
+   if (!matches) {
+-    return errorBoundaryError(new Error(`No route matches URL "${url.pathname}"`), 404);
++    return errorBoundaryError(
++      new Error(`No route matches URL "${url.pathname}"`),
++      404
++    );
+   }
+ 
+   let response;
+@@ -94,7 +102,7 @@ async function handleDataRequest({
+       response = await data.callRouteAction({
+         loadContext,
+         match,
+-        request: request
++        request: request,
+       });
+     } else {
+       let routeId = url.searchParams.get("_data");
+@@ -103,17 +111,20 @@ async function handleDataRequest({
+         return errorBoundaryError(new Error(`Missing route id in ?_data`), 403);
+       }
+ 
+-      let tempMatch = matches.find(match => match.route.id === routeId);
++      let tempMatch = matches.find((match) => match.route.id === routeId);
+ 
+       if (!tempMatch) {
+-        return errorBoundaryError(new Error(`Route "${routeId}" does not match URL "${url.pathname}"`), 403);
++        return errorBoundaryError(
++          new Error(`Route "${routeId}" does not match URL "${url.pathname}"`),
++          403
++        );
+       }
+ 
+       match = tempMatch;
+       response = await data.callRouteLoader({
+         loadContext,
+         match,
+-        request
++        request,
+       });
+     }
+ 
+@@ -131,15 +142,15 @@ async function handleDataRequest({
+ 
+       return new Response(null, {
+         status: 204,
+-        headers
++        headers,
+       });
+     }
+ 
+     if (handleDataRequest) {
+-      response = await handleDataRequest(response.clone(), {
++      response = await handleDataRequest(response, {
+         context: loadContext,
+         params: match.params,
+-        request: request.clone()
++        request,
+       });
+     }
+ 
+@@ -163,7 +174,7 @@ async function handleDocumentRequest({
+   matches,
+   request,
+   routes,
+-  serverMode
++  serverMode,
+ }) {
+   let url = new URL(request.url);
+   let appState = {
+@@ -173,7 +184,7 @@ async function handleDocumentRequest({
+     renderBoundaryRouteId: null,
+     loaderBoundaryRouteId: null,
+     error: undefined,
+-    catch: undefined
++    catch: undefined,
+   };
+ 
+   if (!isValidRequestMethod(request)) {
+@@ -182,14 +193,14 @@ async function handleDocumentRequest({
+     appState.catch = {
+       data: null,
+       status: 405,
+-      statusText: "Method Not Allowed"
++      statusText: "Method Not Allowed",
+     };
+   } else if (!matches) {
+     appState.trackCatchBoundaries = false;
+     appState.catch = {
+       data: null,
+       status: 404,
+-      statusText: "Not Found"
++      statusText: "Not Found",
+     };
+   }
+ 
+@@ -205,7 +216,7 @@ async function handleDocumentRequest({
+       actionResponse = await data.callRouteAction({
+         loadContext,
+         match: actionMatch,
+-        request: request
++        request: request,
+       });
+ 
+       if (responses.isRedirectResponse(actionResponse)) {
+@@ -214,27 +225,36 @@ async function handleDocumentRequest({
+ 
+       actionStatus = {
+         status: actionResponse.status,
+-        statusText: actionResponse.statusText
++        statusText: actionResponse.statusText,
+       };
+ 
+       if (responses.isCatchResponse(actionResponse)) {
+-        appState.catchBoundaryRouteId = getDeepestRouteIdWithBoundary(matches, "CatchBoundary");
++        appState.catchBoundaryRouteId = getDeepestRouteIdWithBoundary(
++          matches,
++          "CatchBoundary"
++        );
+         appState.trackCatchBoundaries = false;
+-        appState.catch = { ...actionStatus,
+-          data: await data.extractData(actionResponse)
++        appState.catch = {
++          ...actionStatus,
++          data: await data.extractData(actionResponse),
+         };
+       } else {
+         actionData = {
+-          [actionMatch.route.id]: await data.extractData(actionResponse)
++          [actionMatch.route.id]: await data.extractData(actionResponse),
+         };
+       }
+     } catch (error) {
+-      appState.loaderBoundaryRouteId = getDeepestRouteIdWithBoundary(matches, "ErrorBoundary");
++      appState.loaderBoundaryRouteId = getDeepestRouteIdWithBoundary(
++        matches,
++        "ErrorBoundary"
++      );
+       appState.trackBoundaries = false;
+       appState.error = await errors.serializeError(error);
+ 
+       if (serverMode !== mode.ServerMode.Test) {
+-        console.error(`There was an error running the action for route ${actionMatch.route.id}`);
++        console.error(
++          `There was an error running the action for route ${actionMatch.route.id}`
++        );
+       }
+     }
+   }
+@@ -243,24 +263,36 @@ async function handleDocumentRequest({
+   let matchesToLoad = matches || [];
+ 
+   if (appState.catch) {
+-    matchesToLoad = getMatchesUpToDeepestBoundary( // get rid of the action, we don't want to call it's loader either
+-    // because we'll be rendering the catch boundary, if you can get access
+-    // to the loader data in the catch boundary then how the heck is it
+-    // supposed to deal with thrown responses?
+-    matchesToLoad.slice(0, -1), "CatchBoundary");
++    matchesToLoad = getMatchesUpToDeepestBoundary(
++      // get rid of the action, we don't want to call it's loader either
++      // because we'll be rendering the catch boundary, if you can get access
++      // to the loader data in the catch boundary then how the heck is it
++      // supposed to deal with thrown responses?
++      matchesToLoad.slice(0, -1),
++      "CatchBoundary"
++    );
+   } else if (appState.error) {
+-    matchesToLoad = getMatchesUpToDeepestBoundary( // get rid of the action, we don't want to call it's loader either
+-    // because we'll be rendering the error boundary, if you can get access
+-    // to the loader data in the error boundary then how the heck is it
+-    // supposed to deal with errors in the loader, too?
+-    matchesToLoad.slice(0, -1), "ErrorBoundary");
++    matchesToLoad = getMatchesUpToDeepestBoundary(
++      // get rid of the action, we don't want to call it's loader either
++      // because we'll be rendering the error boundary, if you can get access
++      // to the loader data in the error boundary then how the heck is it
++      // supposed to deal with errors in the loader, too?
++      matchesToLoad.slice(0, -1),
++      "ErrorBoundary"
++    );
+   }
+ 
+-  let routeLoaderResults = await Promise.allSettled(matchesToLoad.map(match => match.route.module.loader ? data.callRouteLoader({
+-    loadContext,
+-    match,
+-    request
+-  }) : Promise.resolve(undefined))); // Store the state of the action. We will use this to determine later
++  let routeLoaderResults = await Promise.allSettled(
++    matchesToLoad.map((match) =>
++      match.route.module.loader
++        ? data.callRouteLoader({
++            loadContext,
++            match,
++            request,
++          })
++        : Promise.resolve(undefined)
++    )
++  ); // Store the state of the action. We will use this to determine later
+   // what catch or error boundary should be rendered under cases where
+   // actions don't throw but loaders do, actions throw and parent loaders
+   // also throw, etc.
+@@ -294,12 +326,10 @@ async function handleDocumentRequest({
+     // after an action catches or errors we won't follow it, and instead
+     // render the boundary caused by the action.
+ 
+-
+     if (!actionCatch && !actionError && response && isRedirect) {
+       return response;
+     } // Track the boundary ID's for the loaders
+ 
+-
+     if (match.route.module.CatchBoundary) {
+       appState.catchBoundaryRouteId = match.route.id;
+     }
+@@ -314,7 +344,9 @@ async function handleDocumentRequest({
+       appState.error = await errors.serializeError(error);
+ 
+       if (serverMode !== mode.ServerMode.Test) {
+-        console.error(`There was an error running the data loader for route ${match.route.id}`);
++        console.error(
++          `There was an error running the data loader for route ${match.route.id}`
++        );
+       }
+ 
+       break;
+@@ -328,7 +360,7 @@ async function handleDocumentRequest({
+         appState.catch = {
+           data: await data.extractData(response),
+           status: response.status,
+-          statusText: response.statusText
++          statusText: response.statusText,
+         };
+         break;
+       } else {
+@@ -341,7 +373,6 @@ async function handleDocumentRequest({
+   // initially triggered a boundary as that match would not exist in the
+   // matches to load.
+ 
+-
+   if (!appState.catch) {
+     appState.catchBoundaryRouteId = actionCatchBoundaryRouteId;
+   }
+@@ -351,7 +382,6 @@ async function handleDocumentRequest({
+   } // If there was an action error or catch, we will reset the state to the
+   // initial values, otherwise we will use whatever came out of the loaders.
+ 
+-
+   appState.catch = actionCatch || appState.catch;
+   appState.error = actionError || appState.error;
+   let renderableMatches = getRenderableMatches(matches, appState);
+@@ -365,32 +395,55 @@ async function handleDocumentRequest({
+       renderableMatches.push({
+         params: {},
+         pathname: "",
+-        route: routes[0]
++        route: routes[0],
+       });
+     }
+   } // Handle responses with a non-200 status code. The first loader with a
+   // non-200 status code determines the status code for the whole response.
+ 
+-
+-  let notOkResponse = actionStatus && actionStatus.status !== 200 ? actionStatus.status : loaderStatusCodes.find(status => status !== 200);
+-  let responseStatusCode = appState.error ? 500 : typeof notOkResponse === "number" ? notOkResponse : appState.catch ? appState.catch.status : 200;
+-  let responseHeaders = headers.getDocumentHeaders(build, renderableMatches, routeLoaderResponses, actionResponse);
+-  let entryMatches = entry.createEntryMatches(renderableMatches, build.assets.routes);
++  let notOkResponse =
++    actionStatus && actionStatus.status !== 200
++      ? actionStatus.status
++      : loaderStatusCodes.find((status) => status !== 200);
++  let responseStatusCode = appState.error
++    ? 500
++    : typeof notOkResponse === "number"
++    ? notOkResponse
++    : appState.catch
++    ? appState.catch.status
++    : 200;
++  let responseHeaders = headers.getDocumentHeaders(
++    build,
++    renderableMatches,
++    routeLoaderResponses,
++    actionResponse
++  );
++  let entryMatches = entry.createEntryMatches(
++    renderableMatches,
++    build.assets.routes
++  );
+   let serverHandoff$1 = {
+     actionData,
+     appState: appState,
+     matches: entryMatches,
+-    routeData
++    routeData,
+   };
+-  let entryContext = { ...serverHandoff$1,
++  let entryContext = {
++    ...serverHandoff$1,
+     manifest: build.assets,
+     routeModules,
+-    serverHandoffString: serverHandoff.createServerHandoffString(serverHandoff$1)
++    serverHandoffString:
++      serverHandoff.createServerHandoffString(serverHandoff$1),
+   };
+   let handleDocumentRequest = build.entry.module.default;
+ 
+   try {
+-    return await handleDocumentRequest(request.clone(), responseStatusCode, responseHeaders, entryContext);
++    return await handleDocumentRequest(
++      request,
++      responseStatusCode,
++      responseHeaders,
++      entryContext
++    );
+   } catch (error) {
+     responseStatusCode = 500; // Go again, this time with the componentDidCatch emulation. As it rendered
+     // last time we mutated `componentDidCatch.routeId` for the last rendered
+@@ -401,10 +454,16 @@ async function handleDocumentRequest({
+ 
+     appState.trackBoundaries = false;
+     appState.error = await errors.serializeError(error);
+-    entryContext.serverHandoffString = serverHandoff.createServerHandoffString(serverHandoff$1);
++    entryContext.serverHandoffString =
++      serverHandoff.createServerHandoffString(serverHandoff$1);
+ 
+     try {
+-      return await handleDocumentRequest(request.clone(), responseStatusCode, responseHeaders, entryContext);
++      return await handleDocumentRequest(
++        request,
++        responseStatusCode,
++        responseHeaders,
++        entryContext
++      );
+     } catch (error) {
+       if (serverMode !== mode.ServerMode.Test) {
+         console.error(error);
+@@ -416,12 +475,11 @@ async function handleDocumentRequest({
+         message += `\n\n${String(error)}`;
+       } // Good grief folks, get your act together 😂!
+ 
+-
+       return new Response(message, {
+         status: 500,
+         headers: {
+-          "Content-Type": "text/plain"
+-        }
++          "Content-Type": "text/plain",
++        },
+       });
+     }
+   }
+@@ -431,7 +489,7 @@ async function handleResourceRequest({
+   loadContext,
+   matches,
+   request,
+-  serverMode
++  serverMode,
+ }) {
+   let match = matches.slice(-1)[0];
+ 
+@@ -440,13 +498,13 @@ async function handleResourceRequest({
+       return await data.callRouteAction({
+         match,
+         loadContext,
+-        request
++        request,
+       });
+     } else {
+       return await data.callRouteLoader({
+         match,
+         loadContext,
+-        request
++        request,
+       });
+     }
+   } catch (error) {
+@@ -460,29 +518,24 @@ async function handleResourceRequest({
+       message += `\n\n${String(error)}`;
+     } // Good grief folks, get your act together 😂!
+ 
+-
+     return new Response(message, {
+       status: 500,
+       headers: {
+-        "Content-Type": "text/plain"
+-      }
++        "Content-Type": "text/plain",
++      },
+     });
+   }
+ }
+ 
+ const validActionMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+ 
+-function isActionRequest({
+-  method
+-}) {
++function isActionRequest({ method }) {
+   return validActionMethods.has(method.toUpperCase());
+ }
+ 
+ const validRequestMethods = new Set(["GET", "HEAD", ...validActionMethods]);
+ 
+-function isValidRequestMethod({
+-  method
+-}) {
++function isValidRequestMethod({ method }) {
+   return validRequestMethods.has(method.toUpperCase());
+ }
+ 
+@@ -490,8 +543,8 @@ async function errorBoundaryError(error, status) {
+   return responses.json(await errors.serializeError(error), {
+     status,
+     headers: {
+-      "X-Remix-Error": "yes"
+-    }
++      "X-Remix-Error": "yes",
++    },
+   });
+ }
+ 
+@@ -542,13 +595,11 @@ function getMatchesUpToDeepestBoundary(matches, key) {
+ } // This prevents `<Outlet/>` from rendering anything below where the error threw
+ // TODO: maybe do this in <RemixErrorBoundary + context>
+ 
+-
+ function getRenderableMatches(matches, appState) {
+   if (!matches) {
+     return null;
+   } // no error, no worries
+ 
+-
+   if (!appState.catch && !appState.error) {
+     return matches;
+   }
+@@ -557,7 +608,11 @@ function getRenderableMatches(matches, appState) {
+   matches.forEach((match, index) => {
+     let id = match.route.id;
+ 
+-    if (appState.renderBoundaryRouteId === id || appState.loaderBoundaryRouteId === id || appState.catchBoundaryRouteId === id) {
++    if (
++      appState.renderBoundaryRouteId === id ||
++      appState.loaderBoundaryRouteId === id ||
++      appState.catchBoundaryRouteId === id
++    ) {
+       lastRenderableIndex = index;
+     }
+   });
