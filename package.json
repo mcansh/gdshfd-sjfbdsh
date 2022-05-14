@@ -11,23 +11,23 @@
     "start": "cross-env NODE_ENV=production netlify dev"
   },
   "dependencies": {
-    "@netlify/functions": "latest",
+    "@netlify/functions": "^1.0.0",
     "@remix-run/netlify-edge": "experimental-netlify-edge",
-    "@remix-run/react": "experimental-netlify-edge",
-    "@remix-run/server-runtime": "experimental-netlify-edge",
+    "@remix-run/react": "nightly",
+    "@remix-run/server-runtime": "nightly",
     "cross-env": "^7.0.3",
-    "isbot": "^3.4.6",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "isbot": "^3.4.7",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
   },
   "devDependencies": {
     "@remix-run/dev": "experimental-netlify-edge",
-    "@remix-run/eslint-config": "experimental-netlify-edge",
-    "@types/react": "^18.0.5",
-    "@types/react-dom": "^18.0.1",
-    "eslint": "^8.11.0",
-    "patch-package": "6.4.7",
-    "typescript": "^4.5.5"
+    "@remix-run/eslint-config": "nightly",
+    "@types/react": "^18.0.9",
+    "@types/react-dom": "^18.0.4",
+    "eslint": "^8.15.0",
+    "patch-package": "^6.4.7",
+    "typescript": "^4.6.4"
   },
   "engines": {
     "node": ">=14"
