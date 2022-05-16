@@ -13,16 +13,21 @@
   "dependencies": {
     "@netlify/functions": "^1.0.0",
     "@remix-run/netlify-edge": "experimental-netlify-edge",
-    "@remix-run/react": "nightly",
-    "@remix-run/server-runtime": "nightly",
+    "@remix-run/react": "v0.0.0-nightly-a114c40-20220516",
+    "@remix-run/server-runtime": "v0.0.0-nightly-a114c40-20220516",
     "cross-env": "^7.0.3",
     "isbot": "^3.4.7",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
   },
+  "overrides": {
+    "@remix-run/react": "v0.0.0-nightly-a114c40-20220516",
+    "@remix-run/server-runtime": "v0.0.0-nightly-a114c40-20220516",
+    "@remix-run/eslint-config": "v0.0.0-nightly-a114c40-20220516"
+  },
   "devDependencies": {
     "@remix-run/dev": "experimental-netlify-edge",
-    "@remix-run/eslint-config": "nightly",
+    "@remix-run/eslint-config": "v0.0.0-nightly-a114c40-20220516",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
     "eslint": "^8.15.0",
